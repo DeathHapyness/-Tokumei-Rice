@@ -1,8 +1,3 @@
-# Config do niri (binds, layout, cores etc.) direto aqui, em Nix puro —
-# sem passar por template/render em bash (isso morava em ./rice, que foi
-# removido). Pra mudar cor, edite ./theme.nix; pra mudar bind/layout,
-# edite o texto abaixo e rode `sudo nixos-rebuild switch --flake
-# ~/nixos-config#nixos`.
 { config, lib, ... }:
 
 let
@@ -23,11 +18,6 @@ in
   '';
 
   xdg.configFile."niri/config.kdl".text = ''
-    // ------------------------------------------------------------------
-    // niri config — death@nixos — Tokyo Night
-    // gerado via home-manager, não editar direto (edite em
-    // ~/nixos-config/home/death/niri.nix e rode `sudo nixos-rebuild switch --flake ~/nixos-config#nixos`)
-    // ------------------------------------------------------------------
 
     input {
         keyboard {
@@ -86,12 +76,6 @@ in
         geometry-corner-radius 8
         clip-to-geometry true
     }
-
-    // Workspaces 100% dinâmicos (jeito nativo do niri): nenhum é fixado
-    // no config, então só existem — e só aparecem na waybar — os que
-    // você de fato usa, mais um vazio no fim de cada monitor. Índice é
-    // posição, não identidade: Mod+N só "pega" depois que o workspace
-    // N-1 já existir (ver wiki/Workspaces.md).
 
     spawn-at-startup "xwayland-satellite"
     spawn-at-startup "swaybg" "-i" "/home/death/.config/wallpaper/current.png" "-m" "fill"

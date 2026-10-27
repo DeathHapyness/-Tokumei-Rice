@@ -24,7 +24,6 @@ in
   home.packages = with pkgs;
     (builtins.attrValues scripts)
     ++ [
-      # utilitários wayland / niri
       swaybg
       wl-clipboard
       cliphist
@@ -37,22 +36,15 @@ in
       networkmanagerapplet
       blueman
       polkit_gnome
-
-      # aparência
+      prismlauncher
       nwg-look
-
-      # produtividade / faculdade
-      zathura # leitor de PDF
-      obsidian # notas
+      zathura 
+      obsidian 
       libreoffice-stable
       qalculate-gtk
-
-      # dev
-      vscodium # editor do dia a dia (VS Code sem telemetria da MS)
-      jetbrains.idea # IntelliJ IDEA (Java) — idea-oss/Community está descontinuado e inseguro
+      vscodium 
+      jetbrains.idea 
       jdk21
-
-      # segurança / rede
       torsocks
     ];
 
@@ -62,6 +54,5 @@ in
     EDITOR = "vim";
   };
 
-  # Binários instalados com `go install` vão pra ~/go/bin.
   home.sessionPath = [ "$HOME/go/bin" ];
 }

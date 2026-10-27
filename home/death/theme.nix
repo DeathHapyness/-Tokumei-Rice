@@ -1,7 +1,3 @@
-# Paleta "Manga Alley" — tirada do ~/Imagens/wallpaper1.jpg (mangá em
-# tons de cinza frio). Base = cinzas medidos da imagem; acentos = cores
-# bem dessaturadas no mesmo tom, estilo retícula. Usada em todos os programas
-# do rice. Mudar aqui muda o tema em todo lugar que importa este arquivo.
 let
   hexDigit = {
     "0" = 0; "1" = 1; "2" = 2; "3" = 3; "4" = 4;
@@ -34,9 +30,6 @@ in
 
   font = "JetBrainsMono Nerd Font";
 
-  # GTK (CSS do waybar, wlogout, etc.) não entende a notação #RRGGBBAA de
-  # 8 dígitos — dá erro "Junk at end of value". Use `theme.rgba theme.bg
-  # "cc"` no lugar de `"${theme.bg}cc"` para cor com transparência.
   rgba = hexColor: alphaHex:
     let
       r = hexByte (builtins.substring 1 2 hexColor);

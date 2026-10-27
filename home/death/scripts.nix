@@ -1,11 +1,6 @@
-# Scriptzinhos usados pelos binds do niri / waybar / wlogout.
-# Cada um vira um binário no PATH (via home.packages) com o nome dado.
 { pkgs }:
 
 let
-  # Troca o wallpaper na hora, sem rebuild: converte a imagem dada pra
-  # ~/.config/wallpaper/current.png (caminho fixo que o niri já aponta
-  # o swaybg pra ele, veja niri.nix) e reinicia o swaybg.
   setWallpaper = pkgs.writeShellScriptBin "set-wallpaper" ''
     set -euo pipefail
     if [ $# -lt 1 ]; then
@@ -54,8 +49,6 @@ in
       | ${pkgs.wl-clipboard}/bin/wl-copy
   '';
 
-  # Modo de energia (power-profiles-daemon): menu no fuzzel com
-  # Economia / Equilibrado / Desempenho. Abre clicando na bateria da waybar.
   powerProfile = pkgs.writeShellScriptBin "power-profile" ''
     set -euo pipefail
     ppc=${pkgs.power-profiles-daemon}/bin/powerprofilesctl

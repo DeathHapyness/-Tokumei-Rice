@@ -1,5 +1,3 @@
-# Estilo do mako (notificações, spawnado pelo niri) — Tokyo Night, direto
-# de ./theme.nix, no mesmo padrão do fuzzel/kitty/wlogout.
 { ... }:
 
 let

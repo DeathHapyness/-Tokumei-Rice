@@ -1,5 +1,3 @@
-# Estilo do fuzzel (launcher e menus do Super+Espaço/T/Shift+T/Shift+V) —
-# Tokyo Night, direto de ./theme.nix, no mesmo padrão do kitty/wlogout.
 { lib, ... }:
 
 let

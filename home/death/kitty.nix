@@ -18,8 +18,6 @@ in
       cursor_shape = "beam";
       cursor_blink_interval = "0.5";
 
-      # Tokyo Night, direto de ./theme.nix (antes vinha de um
-      # theme.conf renderizado pelo rice, que foi removido).
       foreground = theme.fg;
       background = theme.bg;
       selection_foreground = theme.bg;
@@ -43,9 +41,6 @@ in
       color7 = theme.fgDark;
       color15 = theme.fg;
     };
-    # Desligado: conflitava com o ble.sh (ambos tentam controlar o
-    # accept-line / OSC133 do prompt), causando a necessidade de Ctrl+J
-    # em vez de Enter. ble.sh já cobre highlight/histórico/prompt sozinho.
     shellIntegration.enableBashIntegration = false;
   };
 

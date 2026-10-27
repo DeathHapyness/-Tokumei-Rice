@@ -56,10 +56,6 @@ in
         on-click = "power-profile menu"; # menu Economia / Equilibrado / Desempenho
       };
 
-      # Brilho: porcentagem + bolinha pra arrastar, juntos numa "pílula" só.
-      # A bolinha fica escondida (gaveta) e só aparece clicando no solzinho;
-      # clicar de novo esconde. Os módulos são da própria waybar e se
-      # atualizam sozinhos (inclusive com as teclas de brilho do notebook).
       "group/brightness" = {
         orientation = "horizontal";
         drawer = {

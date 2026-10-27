@@ -1,112 +1,200 @@
-# nixos-config — rice niri
+<h1>
+  Tokumei Rice<sub>(匿名)</sub>
+</h1>
 
-Config completa via flake + home-manager. Já validada: `nix flake check`,
-`nixos-rebuild build --flake .#nixos` e `niri validate` passaram limpos.
 
-## Aplicar
+## Sumário
 
-```
+- [Visão geral](#visão-geral)
+- [Instalação](#instalação)
+- [Estrutura do repositório](#estrutura-do-repositório)
+- [Editando o rice](#editando-o-rice)
+- [Sistema de temas](#sistema-de-temas)
+- [Atalhos do niri](#atalhos-do-niri)
+- [Segurança e privacidade](#segurança-e-privacidade)
+- [Solução de problemas](#solução-de-problemas)
+
+## Visão geral
+
+| Item | Detalhe |
+|---|---|
+| Sistema | NixOS (nixpkgs `unstable`) |
+| Gerência do usuário | home-manager |
+| Sessão | niri (Wayland), GDM + GNOME mantidos como alternativa |
+| Terminal / launcher | kitty / fuzzel |
+| Barra / notificações | waybar / mako |
+| Bloqueio / power | swaylock + swayidle / wlogout |
+| Tema padrão | Tema Personalizado |
+| Bootloader | systemd-boot |
+
+## Instalação
+
+```bash
 cd ~/nixos-config
 sudo nixos-rebuild switch --flake .#nixos
 ```
 
-Isso reinicia o display manager (GDM) — se você estiver numa sessão gráfica
-ativa, salve o que estiver fazendo antes. Depois do switch, na tela de
-login do GDM escolha a sessão **"niri"** no menu de sessão (ícone de
-engrenagem perto do botão de entrar).
+> [!WARNING]
+> O `switch` reinicia o display manager (GDM). Se houver uma sessão gráfica
+> ativa, **salve seu trabalho antes**.
 
-Se algo der errado, a geração anterior (GNOME puro, como estava antes)
-continua disponível no menu do systemd-boot ao reiniciar.
+Depois do switch, na tela de login do GDM, clique na engrenagem perto do botão
+de entrar e escolha a sessão **niri**.
 
-## Estrutura
+**Rollback:** a geração anterior (GNOME puro) continua disponível no menu do
+systemd-boot ao reiniciar.
 
-- `flake.nix` — entrada, pins de nixpkgs (unstable) e home-manager
-- `hosts/nixos/configuration.nix` — sistema: boot, rede, firewall,
-  DNS, Tor, Mullvad, GDM+GNOME (mantido), niri habilitado como sessão
-- `home/death/` — tudo do usuário (niri, kitty, fastfetch, wlogout,
-  gtk/qt, swaylock/swayidle)
-- `home/death/theme.nix` — paleta Tokyo Night estática, usada só por
-  wlogout, swaylock e fastfetch (não trocam de tema em tempo real)
-- `home/death/rice.nix` + `home/death/rice/` — sistema de temas e
-  layouts de waybar trocáveis em tempo real (veja abaixo)
+> Nos arquivos, `<usuario>` é o nome do diretório do seu usuário em `home/`.
 
-## Editar o rice
+## Editando o rice
 
-Mude os arquivos em `home/death/*.nix` (binds em `niri.nix`, cores
-estáticas em `theme.nix`, etc.) e rode o `switch` de novo. Nada é
-editado direto em `~/.config` — os arquivos lá são só symlinks gerados
-pelo home-manager, **exceto** o que o sistema de temas descrito abaixo
-gera dinamicamente.
+1. Altere os arquivos em `home/<usuario>/*.nix` (binds em `niri.nix`, cores
+   estáticas em `theme.nix`,Rice vem com pacotes que o propriotario usava e achava necessario,revise antes de rodar rebuild, etc.).
+2. Rode o `switch` novamente:
 
-## Sistema de temas (estilo omarchy)
+   ```bash
+   sudo nixos-rebuild switch --flake .#nixos
+   ```
 
-`Super+T` abre um menu fuzzel minimalista com os temas disponíveis;
-`Super+Shift+T` abre o mesmo tipo de menu pra escolher o layout da
-waybar. Tudo em bash, sem precisar de rebuild:
+Não edite nada direto em `~/.config`: os arquivos lá são symlinks gerados pelo
+home-manager. **A exceção** são os arquivos gerados dinamicamente pelo sistema
+de temas (próxima seção).
 
-- `home/death/rice/themes/*.sh` — um arquivo por tema (nord,
-  catppuccin-mocha, gruvbox-dark, everforest, dracula, rose-pine,
-  kanagawa-wave, tokyo-night), cada um só com `VAR="#hex"`
-- `home/death/rice/waybar-layouts/{minimal,medio,gadgets}/` —
-  três layouts de waybar: **minimal** (só workspaces + hora + bateria,
-  tudo numa pílula só), **medio** (o padrão atual) e **gadgets** (cpu,
-  memória, disco, rede, título da janela, etc.)
-- `home/death/rice/templates/*.tpl` — templates com tokens `@BG@`,
-  `@FG@` etc. pro niri, fuzzel, mako e kitty
-- `home/death/rice/scripts/*.sh` — a lógica: `rice-apply-theme`,
-  `rice-apply-waybar`, `rice-theme-picker`, `rice-waybar-picker`
+## Sistema de temas
 
-Esses scripts renderizam os templates (com `sed`) direto em
-`~/.config/{niri,waybar,fuzzel,mako,kitty}/`, substituindo os arquivos
-que normalmente seriam symlinks do home-manager — por isso a troca é
-instantânea (niri recarrega sozinho, waybar reinicia, mako recarrega).
-Cada `nixos-rebuild switch` reaplica o tema/layout atual automaticamente
-(`home.activation.riceReseed` em `rice.nix`), então mudar os templates
-e dar `switch` também funciona.
-
-Pra adicionar um tema novo: crie `home/death/rice/themes/nome.sh` com
-os mesmos campos dos outros e rode `switch` — ele já aparece no menu.
-
-**Fora do sistema de temas** (ficam sempre em Tokyo Night, definido em
-`theme.nix`): wlogout, swaylock e o gtk/qt do sistema.
-
-## Atalhos do niri
+Inspirado no omarchy: troca de tema e de layout **em tempo real, sem rebuild**,
+tudo em bash.
 
 | Atalho | Ação |
 |---|---|
-| `Super+Enter` | abre terminal (kitty) |
-| `Super+Q` | fecha janela em foco |
+| `Super+T` | menu (fuzzel) para escolher o tema |
+| `Super+Shift+T` | menu (fuzzel) para escolher o layout da waybar |
+
+### Temas disponíveis
+
+`nord` · `catppuccin-mocha` · `gruvbox-dark` · `everforest` · `dracula` ·
+`rose-pine` · `kanagawa-wave` · `tokyo-night`
+
+### Layouts da waybar
+
+| Layout | Descrição |
+|---|---|
+| `minimal` | só workspaces, hora e bateria, tudo em uma única pílula |
+| `medio` | o padrão |
+| `gadgets` | cpu, memória, disco, rede, título da janela, etc. |
+
+### Controles interativos da waybar
+
+A waybar tem scripts que permitem ajustar o sistema direto pela barra, sem
+abrir terminal:
+
+| Módulo | Interação | Ação |
+|---|---|---|
+| Brilho | rolar (scroll) com o touchpad sobre o módulo | aumenta ou diminui o brilho da tela |
+| Bateria | clicar no ícone | alterna o perfil de energia/desempenho (modo econômico e demais perfis) |
+
+### Como funciona
+
+Os scripts em `rice/scripts/` (`rice-apply-theme`, `rice-apply-waybar`,
+`rice-theme-picker`, `rice-waybar-picker`) renderizam os templates de
+`rice/templates/*.tpl` com `sed`, substituindo tokens como `@BG@` e `@FG@`
+pelas cores do tema escolhido. O resultado é escrito direto em
+`~/.config/{niri,waybar,fuzzel,mako,kitty}/`, no lugar dos symlinks do
+home-manager. Por isso a troca é instantânea:
+
+- niri recarrega sozinho
+- waybar é reiniciada
+- mako recarrega a configuração
+
+Cada `nixos-rebuild switch` reaplica o tema e o layout atuais
+(`home.activation.riceReseed` em `rice.nix`), então alterar templates e rodar
+`switch` também funciona.
+
+### Adicionando um tema
+
+1. Crie `home/<usuario>/rice/themes/nome.sh` com os mesmos campos dos outros
+   temas (um `VAR="#hex"` por linha).
+2. Rode o `switch`. O tema já aparece no menu.
+
+### Fora do sistema de temas
+
+Estes componentes ficam sempre em Tokyo Night (definido em `theme.nix`):
+**wlogout**, **swaylock** e **gtk/qt**. O fastfetch também usa essa paleta
+estática.
+
+## Atalhos do niri
+
+`Super` é a tecla do Windows/Command.
+
+### Janelas e foco
+
+| Atalho | Ação |
+|---|---|
+| `Super+Enter` | abre o terminal (kitty) |
+| `Super+Q` | fecha a janela em foco |
 | `Super+Espaço` | abre o launcher (fuzzel) |
 | `Super+Setas` | move o foco entre janelas/colunas |
 | `Super+Shift+Setas` | move a janela em foco de coluna/workspace |
-| `Super+1..5` | vai pro workspace 1-5 |
-| `Super+Shift+1..5` | manda a janela pro workspace 1-5 |
-| `Super+O` | overview nativo do niri (visão geral de todas as janelas) |
-| `Super+F` | maximiza coluna |
+| `Super+F` | maximiza a coluna |
 | `Super+Shift+F` | tela cheia |
 | `Super+V` | alterna janela flutuante |
-| `Super+T` | seletor de tema (fuzzel, estilo omarchy) |
-| `Super+Shift+T` | seletor de layout da waybar (fuzzel) |
+| `Super+O` | overview nativo do niri |
+
+### Workspaces
+
+| Atalho | Ação |
+|---|---|
+| `Super+1..5` | vai para o workspace 1–5 |
+| `Super+Shift+1..5` | envia a janela para o workspace 1–5 |
+
+### Rice e ferramentas
+
+| Atalho | Ação |
+|---|---|
+| `Super+T` | seletor de tema |
+| `Super+Shift+T` | seletor de layout da waybar |
+| `Super+Shift+V` | histórico do clipboard (cliphist + fuzzel) |
+| `Super+Shift+S` | print de região com anotação (grim + slurp + swappy) |
+| `Print` | print rápido nativo do niri (região, copia para o clipboard) |
+
+### Sessão
+
+| Atalho | Ação |
+|---|---|
 | `Super+L` | bloqueia a tela |
 | `Super+Shift+E` | menu de power (wlogout) |
-| `Super+Shift+V` | histórico de clipboard (cliphist + fuzzel) |
-| `Super+Shift+S` | print de região com anotação (grim+slurp+swappy) |
-| `Print` | print rápido nativo do niri (região, copia pro clipboard) |
 
-## Segurança / anonimato configurados
+## Segurança e privacidade
+
+### Rede
 
 - MAC do wifi randomizado a cada conexão nova (NetworkManager)
-- "Connectivity check" do NetworkManager desligado
-- Firewall via nftables, negando tudo por padrão, sem log de recusados
+- Connectivity check do NetworkManager desligado
+- Firewall via nftables: nega tudo por padrão, sem log de recusados
 - IPv6 privacy extensions (endereços temporários)
-- DNS-over-TLS oportunista via `systemd-resolved`, fallback nos
-  resolvers da Mullvad
-- Tor (daemon cliente local, SOCKS5 em `127.0.0.1:9050`) + `torsocks`
-- Tor Browser instalado para navegação anônima de verdade
-- Mullvad VPN (daemon + GUI) instalado e habilitado
-- `macchanger` disponível para trocar MAC manualmente (ex: cabo)
-- Firefox com telemetria/Pocket desligados, HTTPS-Only, tracking
-  protection e DNS-over-HTTPS pela Mullvad
-- Auto-lock da tela após 5 min de inatividade (swayidle+swaylock),
-  monitor desliga em 10 min
+- DNS-over-TLS oportunista via `systemd-resolved`, com fallback nos resolvers
+  da Mullvad
+- `macchanger` disponível para troca manual de MAC (ex.: conexão por cabo)
 
+### Anonimato
+
+- **Tor**: daemon cliente local com SOCKS5 em `127.0.0.1:9050`, mais `torsocks`
+- **Tor Browser** instalado para navegação anônima
+- **Mullvad VPN** (daemon + GUI) instalado e habilitado
+
+### Navegador e sessão
+
+- Firefox com telemetria e Pocket desligados, HTTPS-Only, tracking protection
+  e DNS-over-HTTPS pela Mullvad
+- Bloqueio de tela após 5 min de inatividade (swayidle + swaylock); o monitor
+  desliga após 10 min
+
+## Solução de problemas
+
+| Problema | O que fazer |
+|---|---|
+| A sessão niri não aparece no GDM | confirme o `switch`, reinicie o GDM (ou o PC) e abra o menu de sessão na engrenagem |
+| Algo quebrou após o switch | reinicie e escolha a geração anterior no menu do systemd-boot |
+| Quero validar sem aplicar | `nixos-rebuild build --flake .#nixos` e `nix flake check` |
+| Config do niri com erro | `niri validate` |
+| Tema não muda ao editar `~/.config` | normal: esses arquivos são regerados; edite os templates/temas em `rice/` e rode o `switch` |
